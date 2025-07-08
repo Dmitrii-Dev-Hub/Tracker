@@ -4,6 +4,9 @@ final class NewHabitOrEventViewController: UIViewController,
                                            ScheduleViewControllerDelegate2,
                                            CategoriesViewControllerDelegate {
     
+    private var colorTrackers = Resources.ColorYP.Tracker.trackers
+    
+    
     var selectedDays = [Day]() {
         willSet(new) {
             tracker = Tracker(
@@ -30,8 +33,8 @@ final class NewHabitOrEventViewController: UIViewController,
     var tracker: Tracker = Tracker(
         id: UUID(),
         name: nil,
-        color: Resources.ColorYP.blue,
-        emoji: "👻",
+        color: nil,
+        emoji: nil,
         timetable: nil,
         creationDate: TrackersViewController.currentDate
     ) {
@@ -59,6 +62,9 @@ final class NewHabitOrEventViewController: UIViewController,
     
     private let typeTracker: TypeOfEventOrHabit
     
+    private let scrollView: UIScrollView = UIScrollView()
+    private let scrollContainer: UIView = UIView()
+    
     private let textField: TextFieldWithPadding = {
         let textField = TextFieldWithPadding()
         textField.placeholder = Resources.Text.placeholderNewTracker
@@ -82,9 +88,18 @@ final class NewHabitOrEventViewController: UIViewController,
         tableView.layer.cornerRadius = 16
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        tableView.isScrollEnabled = false
         tableView.separatorColor = Resources.ColorYP.gray
         tableView.backgroundColor = Resources.ColorYP.backgroundDynamic
         return tableView
+    }()
+    
+    private let emojiAndColorsCollectionView: EmojiAndColorsCollectionView = {
+        let params = GeometricParams(cellCount: 6, topInset: 24,
+                                     leftInset: 18, bottomInset: 40,
+                                     rightInset: 18, cellSpacing: 5)
+        let collection = EmojiAndColorsCollectionView(params: params)
+        return collection
     }()
     
     private let cancelButton = CancelButton(title: Resources.Text.ButtonTitle.cancel)
@@ -108,14 +123,13 @@ final class NewHabitOrEventViewController: UIViewController,
         switchViewController()
         
         textField.addTarget(self, action: #selector(textChanged(_:)), for: .editingChanged)
+        emojiAndColorsCollectionView.delegateController = self
         
-        setupViews()
-        setupLayouts()
         setupTableView()
         setupButtons()
         setupAppearance()
-        
-        hideWarning()
+        setupViews()
+        setupLayouts()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -138,8 +152,8 @@ final class NewHabitOrEventViewController: UIViewController,
     }
     
     private func showWarning() {
-        warningLabel.isHidden = false
         UIView.animate(withDuration: 0.1, animations: {
+            self.warningLabel.isHidden = false
             self.errorLabelHeightConstraint?.constant = 20
             self.errorLabelTopConstraint?.constant = 8
             self.view.layoutIfNeeded()
@@ -192,16 +206,9 @@ final class NewHabitOrEventViewController: UIViewController,
             print("Category is nil")
             return
         }
-        
-        let index = TrackersViewController.categories.firstIndex(of: newCategory)
-        
-        if let index = index {
-            TrackersViewController.categories[index] = newCategory
-        } else {
-            TrackersViewController.categories.append(newCategory)
-        }
+
         self.dismiss(animated: true)
-        delegate?.addTracker()
+        delegate?.addTracker(tracker: tracker, category: newCategory)
     }
     
 }
@@ -248,6 +255,7 @@ extension NewHabitOrEventViewController: UITableViewDelegate {
         
         if typeTracker == .habit || typeTracker == .event, indexPath.row == 0 {
             let categoriesVC = CategoriesViewController(delegate: self, selectedCategory: selectedCategory)
+
             navigationController?.pushViewController(categoriesVC, animated: true)
         }
         
@@ -262,6 +270,7 @@ extension NewHabitOrEventViewController: UITableViewDelegate {
     }
 }
 
+//MARK: - ScheduleViewControllerDelegate
 extension NewHabitOrEventViewController: ScheduleViewControllerDelegate {
     func didSelectSchedule(_ formattedSchedule: [Day], chosenDays: Set<Day>) {
         valueSchedule = formattedSchedule
@@ -269,13 +278,52 @@ extension NewHabitOrEventViewController: ScheduleViewControllerDelegate {
     }
 }
 
+//MARK: - EmojiAndColorsCollectionViewDelegate
+extension NewHabitOrEventViewController: EmojiAndColorsCollectionViewDelegate {
+    func changeSelectedColor(new color: UIColor) {
+        tracker = Tracker(
+            id: tracker.id,
+            name: tracker.name,
+            color: color,
+            emoji: tracker.emoji,
+            timetable: tracker.timetable,
+            creationDate: TrackersViewController.currentDate)
+    }
+    
+    func changeSelectedEmoji(new emoji: String?) {
+        tracker = Tracker(
+            id: tracker.id,
+            name: tracker.name,
+            color: tracker.color,
+            emoji: emoji,
+            timetable: tracker.timetable,
+            creationDate: TrackersViewController.currentDate)
+    }
+}
+
+
 //MARK: - setup UI
 extension NewHabitOrEventViewController {
+    private func getCollectionHeight() -> CGFloat {
+         let availableWidth = view.frame.width - emojiAndColorsCollectionView.params.paddingWidth
+         let cellHeight =  availableWidth / CGFloat(emojiAndColorsCollectionView.params.cellCount)
+         
+         let num = 38 + 48 + 80 + cellHeight * 6
+         let collectionSize = CGFloat(num)
+         
+         return collectionSize
+     }
+    
     private func setupViews() {
-        view.addView(textField)
-        view.addView(warningLabel)
-        view.addView(tableView)
-        view.addView(buttonsStackView)
+        view.addView(scrollView)
+        scrollView.addView(scrollContainer)
+        
+        scrollContainer.addView(textField)
+        scrollContainer.addView(warningLabel)
+        scrollContainer.addView(tableView)
+        scrollContainer.addView(emojiAndColorsCollectionView)
+        scrollContainer.addView(buttonsStackView)
+        
         buttonsStackView.addArrangedSubview(cancelButton)
         buttonsStackView.addArrangedSubview(doneButton)
     }
@@ -290,35 +338,54 @@ extension NewHabitOrEventViewController {
         errorLabelTopConstraint?.isActive = true
         
         NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            
+            scrollContainer.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            scrollContainer.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            scrollContainer.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
+            scrollContainer.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
+            
             //titleTextField
-            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+            textField.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
                                                constant: 16),
-            textField.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+            textField.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
                                                 constant: -16),
-            textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+            textField.topAnchor.constraint(equalTo: scrollContainer.topAnchor,
                                            constant: 24),
             textField.heightAnchor.constraint(equalToConstant: 75),
             
-            warningLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+//            warningLabel.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 8),
+//            warningLabel.heightAnchor.constraint(equalToConstant: 50),
+            warningLabel.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
                                                   constant: 16),
-            warningLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+            warningLabel.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
                                                    constant: -16),
             warningLabel.bottomAnchor.constraint(equalTo: tableView.topAnchor,
                                                  constant: -24),
             
             //dataTableView
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+            tableView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
                                                constant: 16),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+            tableView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
                                                 constant: -16),
             tableView.heightAnchor.constraint(equalToConstant: tableViewHeight),
             
+            emojiAndColorsCollectionView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 32),
+            emojiAndColorsCollectionView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor, constant: 0),
+            emojiAndColorsCollectionView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor, constant: 0),
+            emojiAndColorsCollectionView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor),
+            emojiAndColorsCollectionView.heightAnchor.constraint(equalToConstant: getCollectionHeight()),
+            
             //buttonsStackView
-            buttonsStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor,
+            buttonsStackView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
                                                       constant: 20),
-            buttonsStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor,
+            buttonsStackView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
                                                        constant: -20),
-            buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+            buttonsStackView.bottomAnchor.constraint(equalTo: scrollContainer.bottomAnchor,
                                                      constant: -16),
             buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
         ])
@@ -334,7 +401,7 @@ extension NewHabitOrEventViewController {
     private func setupButtons() {
         blockCreateButton()
         doneButton.addTarget(self, action: #selector(doneButtonTapped),
-                               for: .touchUpInside)
+                             for: .touchUpInside)
         
         cancelButton.addTarget(self,
                                action: #selector(cancelButtonTapped),

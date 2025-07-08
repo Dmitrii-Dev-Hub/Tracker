@@ -1,6 +1,6 @@
 import UIKit
 
-protocol TrackerNavigationControllerDelegate: UIViewController, UISearchResultsUpdating {
+protocol TrackersNavigationControllerDelegate: UIViewController, UISearchResultsUpdating {
     func dateWasChanged(date: Date)
     func addButtonTapped()
 }

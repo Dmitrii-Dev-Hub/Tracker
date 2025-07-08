@@ -11,6 +11,8 @@ extension Resources {
         static let dizzy = UIImage(resource: .dizzyYP)
         static let image = UIImage(resource: .imageYP)
         static let arrowRight = UIImage(systemName: "chevron.right")
-        static let checkmark = UIImage(resource: .checkmark)
+        static let checkmark = UIImage(resource: .checkmarkYP)
+        
+
     }
 }

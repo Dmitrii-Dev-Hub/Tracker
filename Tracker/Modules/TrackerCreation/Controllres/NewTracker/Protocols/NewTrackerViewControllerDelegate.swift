@@ -1,5 +1,5 @@
 import Foundation
 
 protocol NewTrackerViewControllerDelegate: NSObject {
-    func addTracker()
+    func addTracker(tracker: Tracker, category: TrackerCategory)
 }

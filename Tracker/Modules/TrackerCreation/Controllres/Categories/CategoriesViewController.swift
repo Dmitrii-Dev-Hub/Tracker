@@ -4,9 +4,10 @@ final class CategoriesViewController: UIViewController, UINavigationControllerDe
     
     weak var delegate: CategoriesViewControllerDelegate?
     
-    var categories: [TrackerCategory] = TrackersViewController.categories
+    private var tableIsEmpty = true
     
-    private var selectedCategory: TrackerCategory?
+    private var selectedCategory: TrackerCategory? = nil
+    private var categoryStoreManager: CategoryStoreManager?
     
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
@@ -33,6 +34,12 @@ final class CategoriesViewController: UIViewController, UINavigationControllerDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        categoryStoreManager = CategoryStoreManager(
+            categoryStore: TrackerCategoryStore(),
+            delegate: self
+        )
+        tableIsEmpty = (categoryStoreManager?.numberOfRowsInSection(0) ?? 0 == 0) ? true : false
         
         setupSubviews()
         setupAppearance()
@@ -69,18 +76,42 @@ final class CategoriesViewController: UIViewController, UINavigationControllerDe
 }
 
 //MARK: - NewCategoryViewControllerDelegate
-extension CategoriesViewController: NewCategoryViewControllerDelegate {
-    func removeStubAndShowCategories() {
-        stubView.removeFromSuperview()
-        setupTableView()
-        tableView.reloadData()
+extension CategoriesViewController: NewCategoryViewControllerDelegate{
+    func add(category: TrackerCategory) {
+        categoryStoreManager?.create(category: category)
+    }
+}
+
+//MARK: - NewCategoryViewControllerDelegate
+extension CategoriesViewController: NewCategoryStoreManagerDelegate {
+    func removeStubAndShowCategories(indexPath: IndexPath) {
+        if stubView.isHidden == false {
+            stubView.removeFromSuperview()
+            setupTableView()
+        }
+
+        if tableIsEmpty {
+            tableView.endUpdates()
+            tableIsEmpty = false
+            return
+        } else {
+            tableView.performBatchUpdates {
+                tableView.insertRows(at: [indexPath], with: .automatic)
+            }
+        }
+        tableView.endUpdates()
+    }
+    
+    func startUpdate() {
+        tableView.beginUpdates()
     }
 }
 
 //MARK: - UITableViewDataSource
 extension CategoriesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        categories.count
+        return categoryStoreManager?.numberOfRowsInSection(section) ?? 0
+        print(categoryStoreManager?.numberOfRowsInSection(section))
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -94,25 +125,30 @@ extension CategoriesViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        cell.configureCell(with: categories[indexPath.row])
+        guard let category = categoryStoreManager?.object(at: indexPath) else {
+            print("Category is nil in creation cell")
+            return UITableViewCell()
+        }
         
+        cell.configureCell(with: category)
+        print(category)
         if selectedCategory != nil && cell.textLabel?.text == selectedCategory?.title {
             let imageView = UIImageView(image: Resources.ImagesYP.checkmark)
             cell.accessoryView = imageView
         }
         
-        if(categories.count == 1){
-            cell.layer.cornerRadius = 16
-        } else if (indexPath.row == 0 && categories.count > indexPath.row) {
-            cell.layer.cornerRadius = 16
-            cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        } else if (indexPath.row == categories.count-1 && categories.count != 0 ) {
-            cell.layer.cornerRadius = 16
-            cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-            tableView.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-        }  else {
-            cell.layer.cornerRadius = 0.0
-        }
+//        if(category.count == 1){
+//            cell.layer.cornerRadius = 16
+//        } else if (indexPath.row == 0 && category.count > indexPath.row) {
+//            cell.layer.cornerRadius = 16
+//            cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+//        } else if (indexPath.row == category.count-1 && category.count != 0 ) {
+//            cell.layer.cornerRadius = 16
+//            cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+//            tableView.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+//        }  else {
+//            cell.layer.cornerRadius = 0.0
+//        }
 
         //MARK: DOTO - доделать нижние подчеркивание
         
@@ -131,10 +167,15 @@ extension CategoriesViewController: UITableViewDelegate {
         
         guard let cell = tableView.cellForRow(at: indexPath) else { return }
         
+        guard let category = categoryStoreManager?.object(at: indexPath) else {
+            print("Category is nil in did select cell")
+            return
+        }
+        
         if cell.accessoryView == nil {
             let imageView = UIImageView(image: Resources.ImagesYP.checkmark)
             cell.accessoryView = imageView
-            categoryDidSelect(category: categories[indexPath.row])
+            categoryDidSelect(category: category)
         } else {
             cell.accessoryView = nil
             categoryDidDeselect()
@@ -146,7 +187,7 @@ extension CategoriesViewController: UITableViewDelegate {
 extension CategoriesViewController {
     private func setupSubviews() {
         setupDoneButton()
-        categories.isEmpty ? setupStubView() : setupTableViewLayouts()
+        tableIsEmpty ? setupStubView() : setupTableViewLayouts()
     }
     
     private func setupStubView() {

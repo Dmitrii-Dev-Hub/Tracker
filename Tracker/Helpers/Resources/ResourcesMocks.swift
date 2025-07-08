@@ -37,5 +37,9 @@ extension Resources {
             TrackerCategory(title: "Радостные мелочи", trackers: [
                 Tracker(id: UUID(), name: "Свидания в апреле", color: Resources.ColorYP.blue, emoji: "😂", timetable: [.thursday, .tuesday], creationDate: Date())])
         ]
+        
+        static let emojies: [Character] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱",
+                                           "😇", "😡", "🥶", "🤔", "🙌", "🍔",
+                                           "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     }
 }

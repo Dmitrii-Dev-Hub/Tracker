@@ -73,8 +73,8 @@ final class NewTrackerViewController: UIViewController {
 }
 
 //MARK: - NewTrackerViewControllerDelegate
-extension NewTrackerViewController: NewHabitOrEventViewDelegate { //MARK: etid!
-    func addTracker() {
-        delegate?.addTracker()
+extension NewTrackerViewController: NewHabitOrEventViewDelegate {
+    func addTracker(tracker: Tracker, category: TrackerCategory) {
+        delegate?.addTracker(tracker: tracker, category: category)
     }
 }

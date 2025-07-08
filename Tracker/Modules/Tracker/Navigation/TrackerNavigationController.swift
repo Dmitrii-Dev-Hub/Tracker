@@ -2,7 +2,7 @@ import UIKit
 
 final class TrackerNavigationController: UINavigationController {
     
-    private let datePicker: UIDatePicker = { 
+    private let datePicker: UIDatePicker = { //MARK: DOTO - сделать месяц цифрами
         let datePicker = UIDatePicker()
         datePicker.locale = Locale(identifier: "ru_RU")
         datePicker.datePickerMode = .date
@@ -20,9 +20,9 @@ final class TrackerNavigationController: UINavigationController {
         return searchController
     }()
     
-    weak var viewController: TrackerNavigationControllerDelegate?
+    weak var viewController: TrackersNavigationControllerDelegate?
     
-    init(rootViewController: TrackerNavigationControllerDelegate) {
+    init(rootViewController: TrackersNavigationControllerDelegate) {
         super.init(rootViewController: rootViewController)
         viewController = rootViewController
         setupAppearance()
