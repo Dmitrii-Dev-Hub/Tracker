@@ -4,14 +4,11 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     static var categories: [TrackerCategory] = Resources.Mocks.trackers
+    private var trackerStoreManager: TrackerStoreManager?
+    private var searchText: String? = nil
     static var currentDate = Date()
-    private var completedTrackers: [TrackerRecord] = []
     
-    private let collectionHelper = HelperTrackersCollectionView(
-        categories: TrackersViewController.categories,
-        with: GeometricParams(cellCount: 2, topInset: 12,
-                              leftInset: 0, bottomInset: 32,
-                              rightInset: 0, cellSpacing: 9))
+    private var collectionHelper: HelperTrackersCollectionView?
     
     private let stubView = NoContentView(text: Resources.Text.textNoContent, image: Resources.ImagesYP.dizzy)
     
@@ -35,9 +32,8 @@ final class TrackersViewController: UIViewController {
         
         configure()
         
-        collectionHelper.completedTrackers = completedTrackers
         let currentWeekday = getCurrentWeekday()
-        filterTrackers(by: currentWeekday)
+//        filterTrackers(by: currentWeekday)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,6 +42,9 @@ final class TrackersViewController: UIViewController {
         trackersCollection.reloadData()
     }
     
+    private func fetchCategories() -> [TrackerCategory] {
+        trackerStoreManager?.fetchAllCategories() ?? []
+    }
     
     private func getCurrentWeekday() -> Day {
         let calendar = Calendar.current
@@ -55,9 +54,17 @@ final class TrackersViewController: UIViewController {
         return currentWeekday
     }
     
-    private func reloadCollection(with data: [TrackerCategory]) {
-        collectionHelper.categories = data
+    private func reloadCollection() {
         trackersCollection.reloadData()
+    }
+    
+    private func reloadCollectionAndSetup() {
+        reloadCollection()
+        setupSubviews()
+    }
+    
+    private func trackersIsEmpty() -> Bool {
+        trackerStoreManager?.trackersIsEmpty() ?? true
     }
     
     private func getFilteredTrackers(by day: Day) -> [TrackerCategory] {
@@ -82,79 +89,141 @@ final class TrackersViewController: UIViewController {
         return filteredCategories
     }
     
-    private func filterTrackers(by day: Day) {
-        var filtered = getFilteredTrackers(by: day)
-        
-        if let searchText = navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
-            filtered = filtered.map { category in
-                let filteredTrackers = category.trackers.filter { item in
-                    guard let name = item.name else { return false }
-                    return name.lowercased().contains(searchText.lowercased())
-                }
-                return TrackerCategory(title: category.title, trackers: filteredTrackers)
-            }
-        }
-        reloadCollection(with: filtered)
-        setupSubviews()
-    }
-    
-    private func trackersIsEmpty() -> Bool {
-        if TrackersViewController.categories.isEmpty {
-            return true
-        }
-
-        var trackersIsEmpty = true
-        for category in collectionHelper.categories {
-            if !category.trackers.isEmpty {
-                trackersIsEmpty = false
-            }
-        }
-        
-        return trackersIsEmpty
-    }
+//    private func filterTrackers(by day: Day) {
+//        var filtered = getFilteredTrackers(by: day)
+//
+//        if let searchText = navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
+//            filtered = filtered.map { category in
+//                let filteredTrackers = category.trackers.filter { item in
+//                    guard let name = item.name else { return false }
+//                    return name.lowercased().contains(searchText.lowercased())
+//                }
+//                return TrackerCategory(title: category.title, trackers: filteredTrackers)
+//            }
+//        }
+//        reloadCollection()
+//        setupSubviews()
+//    }
+//
+//    private func trackersIsEmpty() -> Bool {
+//        if TrackersViewController.categories.isEmpty {
+//            return true
+//        }
+//
+//        var trackersIsEmpty = true
+//        for category in collectionHelper.categories {
+//            if !category.trackers.isEmpty {
+//                trackersIsEmpty = false
+//            }
+//        }
+//
+//        return trackersIsEmpty
+//    }
 }
 
 extension TrackersViewController: NewTrackerViewControllerDelegate {
-    func addTracker() {
-        if !stubView.isHidden {
+    func addTracker(tracker: Tracker, category: TrackerCategory) {
+        trackerStoreManager?.create(tracker: tracker, category: category)
+    }
+}
+
+// MARK: TrackerStoreManagerDelegate
+
+extension TrackersViewController: TrackerStoreManagerDelegate {
+    func addTracker(at indexPath: IndexPath) {
+        if stubView.isHidden == false {
             stubView.removeFromSuperview()
             addTrackersCollection()
         }
-        let weekday = getCurrentWeekday()
-        filterTrackers(by: weekday)
+        
         trackersCollection.reloadData()
     }
 }
 
+//MARK: - NewTrackerViewControllerDelegate
+//extension TrackersViewController: NewTrackerViewControllerDelegate {
+//    func addTracker() {
+//        if !stubView.isHidden {
+//            stubView.removeFromSuperview()
+//            addTrackersCollection()
+//        }
+//        let weekday = getCurrentWeekday()
+//        filterTrackers(by: weekday)
+//        trackersCollection.reloadData()
+//    }
+//}
+
+
+// MARK: UISearchResultsUpdating
 
 extension TrackersViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
+        if let searchText = searchController.searchBar.text, !searchText.isEmpty {
+            self.searchText = searchText
+        } else {
+            self.searchText = nil
+        }
+        
+        trackerStoreManager?.setupFetchedResultsController(
+            with: getCurrentWeekday(),
+            and: searchText,
+            date: TrackersViewController.currentDate
+        )
+        reloadCollectionAndSetup()
     }
 }
 
 //MARK: - TrackerNavigationControllerDelegate
-extension TrackersViewController: TrackerNavigationControllerDelegate {
+extension TrackersViewController: TrackersNavigationControllerDelegate {
     func dateWasChanged(date: Date) {
         TrackersViewController.currentDate = date
-        collectionHelper.currentDate = date
+        collectionHelper?.changeCurrentDate(date: date)
+        trackerStoreManager?.setupFetchedResultsController(
+            with: getCurrentWeekday(),
+            and: searchText,
+            date: TrackersViewController.currentDate
+        )
         
-        let currentWeekday = getCurrentWeekday()
-        filterTrackers(by: currentWeekday)
+        reloadCollectionAndSetup()
     }
     
     func addButtonTapped() {
         let viewController = NewTrackerViewController()
         viewController.delegate = self
-        let navVC = UINavigationController(rootViewController: viewController)
-        present(navVC, animated: true)
+        let nav = UINavigationController(rootViewController: viewController)
+        present(nav, animated: true)
     }
 }
 
+//MARK: - UI
 
 extension TrackersViewController {
     private func configure() {
         view.backgroundColor = Resources.ColorYP.whiteDynamic
+        
+        trackerStoreManager = TrackerStoreManager(
+            trackerStore: TrackerStore(),
+            categoryStore: TrackerCategoryStore()
+        )
+        trackerStoreManager?.delegate = self
+        
+        trackerStoreManager?.setupFetchedResultsController(
+            with: getCurrentWeekday(),
+            and: searchText,
+            date: TrackersViewController.currentDate
+        )
+        
+        guard let trackerStoreManager = trackerStoreManager else {
+            return
+        }
+        
+        collectionHelper = HelperTrackersCollectionView(
+            trackerStoreManager: trackerStoreManager,
+            with: GeometricParams(cellCount: 2, topInset: 12,
+                                  leftInset: 0, bottomInset: 32,
+                                  rightInset: 0, cellSpacing: 9)
+        )
         
         trackersCollection.dataSource = collectionHelper
         trackersCollection.delegate = collectionHelper

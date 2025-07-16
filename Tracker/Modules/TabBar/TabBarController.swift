@@ -2,6 +2,7 @@ import UIKit
 
 final class TabBarController: UITabBarController {
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -9,6 +10,7 @@ final class TabBarController: UITabBarController {
         setupTabBar()
     }
     
+    // MARK: - Private Methods
     private func setupAppearance() {
         view.backgroundColor = Resources.ColorYP.whiteDynamic
         tabBar.isTranslucent = false

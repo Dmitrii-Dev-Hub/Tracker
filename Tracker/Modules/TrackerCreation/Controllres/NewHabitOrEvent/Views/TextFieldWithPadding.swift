@@ -1,9 +1,4 @@
-//
-//  TextFieldWithPadding.swift
-//  Tracker
-//
-//  Created by Александр Плешаков on 24.05.2024.
-//
+
 
 import UIKit
 
