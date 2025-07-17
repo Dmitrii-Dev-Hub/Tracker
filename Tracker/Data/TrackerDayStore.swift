@@ -1,4 +1,3 @@
-
 import CoreData
 
 final class DaysStore {
@@ -27,7 +26,7 @@ final class DaysStore {
     }
     
     private func createDays() {
-        let days = Resources.Mocks.weekdays
+        let days = R.Mocks.weekdays
         days.forEach { day in
             let dayCoreData = DayCoreData(context: context)
             dayCoreData.day = day.rawValue

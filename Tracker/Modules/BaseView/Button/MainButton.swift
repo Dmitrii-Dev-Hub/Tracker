@@ -14,8 +14,8 @@ final class MainButton: BaseButton {
     }
     
     private func configureButton() {
-        backgroundColor = Resources.ColorYP.blackDynamic
-        setTitleColor(Resources.ColorYP.whiteDynamic, for: .normal)
+        backgroundColor = R.ColorYP.blackDynamic
+        setTitleColor(R.ColorYP.whiteDynamic, for: .normal)
         layer.cornerRadius = 16
         titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
     }

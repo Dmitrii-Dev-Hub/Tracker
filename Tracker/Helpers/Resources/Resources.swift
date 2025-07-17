@@ -1,4 +1,4 @@
 import Foundation
 
 //Resources
-enum Resources {}
+enum R {}

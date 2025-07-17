@@ -1,6 +1,6 @@
 import Foundation
 
-extension Resources {
+extension R {
     enum Text {
         enum NavTitle {
             static let newTracker = "Создание трекера"
@@ -13,6 +13,12 @@ extension Resources {
             static let cancel = "Отменить"
             static let done = "Готово"
             static let createCategory = "Добавить категорию"
+            static let onboarding = "Вот это технологии!"
+        }
+        
+        enum Onboarding {
+            static let blue = "Отслеживайте только то, что хотите"
+            static let red = "Даже если это не литры воды и йога"
         }
         
         static let tracker = "Трекеры"

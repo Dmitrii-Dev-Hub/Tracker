@@ -1,6 +1,6 @@
 import Foundation
 
-extension Resources {
+extension R {
     enum Mocks {
         static let weekdays: [Day] = [
             .monday,
@@ -27,15 +27,15 @@ extension Resources {
                 Tracker(
                     id: UUID(),
                     name: "Поливать растения",
-                    color: Resources.ColorYP.blue,
+                    color: R.ColorYP.blue,
                     emoji: "❤️",
                     timetable: [.monday, .wednesday],
                     creationDate: Date()
                 ),
-                Tracker(id: UUID(), name: "Кошка заслонила камеру на созвоне", color:  Resources.ColorYP.blue, emoji: "👻", timetable: [.tuesday], creationDate: Date()),
-                Tracker(id: UUID(), name: "Бабушка прислала открытку в вотсапе", color: Resources.ColorYP.blue, emoji: "☺️", timetable: [.wednesday], creationDate: Date())]),
+                Tracker(id: UUID(), name: "Кошка заслонила камеру на созвоне", color:  R.ColorYP.blue, emoji: "👻", timetable: [.tuesday], creationDate: Date()),
+                Tracker(id: UUID(), name: "Бабушка прислала открытку в вотсапе", color: R.ColorYP.blue, emoji: "☺️", timetable: [.wednesday], creationDate: Date())]),
             TrackerCategory(title: "Радостные мелочи", trackers: [
-                Tracker(id: UUID(), name: "Свидания в апреле", color: Resources.ColorYP.blue, emoji: "😂", timetable: [.thursday, .tuesday], creationDate: Date())])
+                Tracker(id: UUID(), name: "Свидания в апреле", color: R.ColorYP.blue, emoji: "😂", timetable: [.thursday, .tuesday], creationDate: Date())])
         ]
         
         static let emojies: [Character] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱",

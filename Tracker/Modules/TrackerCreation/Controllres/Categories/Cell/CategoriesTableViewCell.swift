@@ -10,11 +10,11 @@ final class CategoriesTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with title: TrackerCategory) {
-        self.textLabel?.text = title.title
+    func configureCell(with title: String) {
+        self.textLabel?.text = title
         self.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        self.textLabel?.textColor = Resources.ColorYP.blackDynamic
-        self.backgroundColor = Resources.ColorYP.backgroundDynamic
+        self.textLabel?.textColor = R.ColorYP.blackDynamic
+        self.backgroundColor = R.ColorYP.backgroundDynamic
     }
 }
 

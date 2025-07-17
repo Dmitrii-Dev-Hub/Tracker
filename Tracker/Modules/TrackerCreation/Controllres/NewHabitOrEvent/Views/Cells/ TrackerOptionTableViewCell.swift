@@ -11,7 +11,7 @@ final class TrackerOptionTableViewCell: UITableViewCell {
         accessoryType = .disclosureIndicator
         textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         detailTextLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
-        detailTextLabel?.textColor = Resources.ColorYP.gray
+        detailTextLabel?.textColor = R.ColorYP.gray
     }
     
     required init?(coder: NSCoder) {

@@ -6,9 +6,9 @@ final class EmojiAndColorsCollectionView: UICollectionView {
     weak var delegateController: EmojiAndColorsCollectionViewDelegate?
     
     let params: GeometricParams
-    private let colors = Resources.ColorYP.Tracker.trackers
-    private let borderColors = Resources.ColorYP.Tracker.trackersBorder
-    private let emojies = Resources.Mocks.emojies
+    private let colors = R.ColorYP.Tracker.trackers
+    private let borderColors = R.ColorYP.Tracker.trackersBorder
+    private let emojies = R.Mocks.emojies
     
     private var emojiIsSelected = false
     private var colorIsSelected = false
@@ -32,7 +32,7 @@ final class EmojiAndColorsCollectionView: UICollectionView {
     // MARK: Methods
     
     private func configure() {
-        backgroundColor = Resources.ColorYP.whiteDynamic
+        backgroundColor = R.ColorYP.whiteDynamic
         
         showsVerticalScrollIndicator = false
         showsHorizontalScrollIndicator = false
@@ -136,7 +136,7 @@ extension EmojiAndColorsCollectionView: UICollectionViewDelegateFlowLayout {
             
             lastSelectedEmojiCell = cell
             emojiIsSelected = true
-            cell.backgroundColor = Resources.ColorYP.backgroundDynamic
+            cell.backgroundColor = R.ColorYP.backgroundDynamic
             
             delegateController?.changeSelectedEmoji(new: String(emojies[indexPath.row]))
         } else {

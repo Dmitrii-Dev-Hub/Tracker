@@ -2,19 +2,29 @@ import UIKit
 
 final class NewCategoriesViewController: UIViewController {
     
-    weak var delegate: NewCategoryViewControllerDelegate?
+    private let viewModel: CategoriesViewModelProtocol
     
     private let textField: TextFieldWithPadding = {
         let textField = TextFieldWithPadding()
-        textField.placeholder = Resources.Text.placeholderNewTracker
-        textField.backgroundColor = Resources.ColorYP.backgroundDynamic
+        textField.placeholder = R.Text.placeholderNewTracker
+        textField.backgroundColor = R.ColorYP.backgroundDynamic
         textField.clearButtonMode = .whileEditing
         textField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         textField.layer.cornerRadius = 16
         return textField
     }()
     
-    private let doneButton = MainButton(title: Resources.Text.ButtonTitle.done)
+    private let doneButton = MainButton(title: R.Text.ButtonTitle.done)
+    
+    init(viewModel: CategoriesViewModelProtocol) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +40,8 @@ final class NewCategoriesViewController: UIViewController {
         guard let text = textField.text else { return }
         let category = TrackerCategory(title: text, trackers: [])
         
-        delegate?.add(category: category)
+        viewModel.addCategory(category: category)
+        
         self.dismiss(animated: true)
     }
     
@@ -38,10 +49,10 @@ final class NewCategoriesViewController: UIViewController {
         guard let text = textField.text else { return }
         if text == "" {
             doneButton.isEnabled = false
-            doneButton.backgroundColor = Resources.ColorYP.gray
+            doneButton.backgroundColor = R.ColorYP.gray
         } else {
             doneButton.isEnabled = true
-            doneButton.backgroundColor = Resources.ColorYP.blackDynamic
+            doneButton.backgroundColor = R.ColorYP.blackDynamic
         }
     }
 }
@@ -85,8 +96,8 @@ extension NewCategoriesViewController {
     }
     
     private func setupAppearance() {
-        view.backgroundColor = Resources.ColorYP.whiteDynamic
-        title = Resources.Text.newCategory
+        view.backgroundColor = R.ColorYP.whiteDynamic
+        title = R.Text.newCategory
     }
     
     private func setupTextField() {
@@ -96,7 +107,7 @@ extension NewCategoriesViewController {
     
     private func setupButtons() {
         doneButton.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
-        doneButton.backgroundColor = Resources.ColorYP.gray
+        doneButton.backgroundColor = R.ColorYP.gray
         doneButton.isEnabled = false
     }
 }

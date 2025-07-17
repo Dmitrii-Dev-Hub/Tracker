@@ -45,12 +45,12 @@ final class NewTrackerViewController: UIViewController {
     }
     
     private func setupAppearance() {
-        view.backgroundColor = Resources.ColorYP.whiteDynamic
-        title = Resources.Text.NavTitle.newTracker
+        view.backgroundColor = R.ColorYP.whiteDynamic
+        title = R.Text.NavTitle.newTracker
         
         navigationController?.navigationBar.standardAppearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: Resources.ColorYP.blackDynamic
+            .foregroundColor: R.ColorYP.blackDynamic
         ]
     }
     

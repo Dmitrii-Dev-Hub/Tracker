@@ -13,10 +13,10 @@ final class CancelButton: BaseButton {
     }
     
     private func configureButton() {
-        backgroundColor = Resources.ColorYP.whiteDynamic
-        setTitleColor(Resources.ColorYP.red, for: .normal)
+        backgroundColor = R.ColorYP.whiteDynamic
+        setTitleColor(R.ColorYP.red, for: .normal)
         layer.borderWidth = 1
-        layer.borderColor = Resources.ColorYP.red.cgColor
+        layer.borderColor = R.ColorYP.red.cgColor
         layer.cornerRadius = 16
         titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
     }
