@@ -1,6 +1,6 @@
 import UIKit
 
-extension Resources {
+extension R {
     enum ColorYP {
         static let whiteDynamic = UIColor(resource: .whiteYP)
         static let blackDynamic = UIColor(resource: .blackYP)
@@ -31,46 +31,46 @@ extension Resources {
             static let selection18 = UIColor(resource: .selection18)
             
             static let trackers = [
-                Resources.ColorYP.Tracker.selection1,
-                Resources.ColorYP.Tracker.selection2,
-                Resources.ColorYP.Tracker.selection3,
-                Resources.ColorYP.Tracker.selection4,
-                Resources.ColorYP.Tracker.selection5,
-                Resources.ColorYP.Tracker.selection6,
-                Resources.ColorYP.Tracker.selection7,
-                Resources.ColorYP.Tracker.selection8,
-                Resources.ColorYP.Tracker.selection9,
-                Resources.ColorYP.Tracker.selection10,
-                Resources.ColorYP.Tracker.selection11,
-                Resources.ColorYP.Tracker.selection12,
-                Resources.ColorYP.Tracker.selection13,
-                Resources.ColorYP.Tracker.selection14,
-                Resources.ColorYP.Tracker.selection15,
-                Resources.ColorYP.Tracker.selection16,
-                Resources.ColorYP.Tracker.selection17,
-                Resources.ColorYP.Tracker.selection18,
+                R.ColorYP.Tracker.selection1,
+                R.ColorYP.Tracker.selection2,
+                R.ColorYP.Tracker.selection3,
+                R.ColorYP.Tracker.selection4,
+                R.ColorYP.Tracker.selection5,
+                R.ColorYP.Tracker.selection6,
+                R.ColorYP.Tracker.selection7,
+                R.ColorYP.Tracker.selection8,
+                R.ColorYP.Tracker.selection9,
+                R.ColorYP.Tracker.selection10,
+                R.ColorYP.Tracker.selection11,
+                R.ColorYP.Tracker.selection12,
+                R.ColorYP.Tracker.selection13,
+                R.ColorYP.Tracker.selection14,
+                R.ColorYP.Tracker.selection15,
+                R.ColorYP.Tracker.selection16,
+                R.ColorYP.Tracker.selection17,
+                R.ColorYP.Tracker.selection18,
             ]
             
             
             static var trackersBorder: [UIColor] = [
-                Resources.ColorYP.Tracker.selection1.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection2.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection3.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection4.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection5.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection6.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection7.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection8.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection9.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection10.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection11.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection12.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection13.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection14.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection15.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection16.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection17.withAlphaComponent(0.3),
-                Resources.ColorYP.Tracker.selection18.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection1.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection2.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection3.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection4.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection5.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection6.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection7.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection8.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection9.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection10.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection11.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection12.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection13.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection14.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection15.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection16.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection17.withAlphaComponent(0.3),
+                R.ColorYP.Tracker.selection18.withAlphaComponent(0.3),
             ]
         }
     }

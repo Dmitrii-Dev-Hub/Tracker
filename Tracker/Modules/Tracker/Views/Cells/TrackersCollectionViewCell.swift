@@ -23,7 +23,7 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.numberOfLines = 2
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = Resources.ColorYP.whiteDynamic
+        label.textColor = R.ColorYP.whiteDynamic
         
         return label
     }()
@@ -31,15 +31,15 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     private let daysLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = Resources.ColorYP.blackDynamic
+        label.textColor = R.ColorYP.blackDynamic
         
         return label
     }()
     
     private let addButton: UIButton = {
-        let button = UIButton.systemButton(with: Resources.ImagesYP.addIcon, target: nil, action: nil)
+        let button = UIButton.systemButton(with: R.ImagesYP.addIcon, target: nil, action: nil)
         button.layer.cornerRadius = 17
-        button.tintColor = Resources.ColorYP.whiteDynamic
+        button.tintColor = R.ColorYP.whiteDynamic
         
         return button
     }()
@@ -102,14 +102,14 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     
     private func setCompletedState(with count: Int) {
         addButton.layer.opacity = 0.3
-        addButton.setImage(Resources.ImagesYP.checkmark, for: .normal)
+        addButton.setImage(R.ImagesYP.checkmark, for: .normal)
         setDays(text: getDayText(number: count))
         isCompletedToday = true
     }
     
     private func setUncompletedState(with count: Int) {
         addButton.layer.opacity = 1
-        addButton.setImage(Resources.ImagesYP.addIcon, for: .normal)
+        addButton.setImage(R.ImagesYP.addIcon, for: .normal)
         setDays(text: getDayText(number: count))
         isCompletedToday = false
     }

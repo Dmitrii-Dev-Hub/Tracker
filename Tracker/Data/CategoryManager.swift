@@ -8,29 +8,45 @@ final class CategoryStoreManager: NSObject {
     private let categoryStore: TrackerCategoryStore
     private let context = DataManager.shared.persistentContainer.viewContext
     private var insertedIndex: IndexPath?
-    
-    private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData> = {
-        
-        let fetchRequest = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
-        let fetchedResultsController = NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: context,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-        
-        fetchedResultsController.delegate = self
-        try? fetchedResultsController.performFetch()
-        return fetchedResultsController
-    }()
+    private var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>?
     
     // MARK: Init
     
     init(categoryStore: TrackerCategoryStore, delegate: NewCategoryStoreManagerDelegate) {
         self.categoryStore = categoryStore
         self.delegate = delegate
+    }
+    
+    init(categoryStore: TrackerCategoryStore) {
+        self.categoryStore = categoryStore
+        super.init()
+        
+        createFetchedController()
+    }
+    
+    private func createFetchedController() {
+        let fetchRequest = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
+        
+        let pinnedCategoryName = NSLocalizedString("pinned", comment: "")
+        fetchRequest.predicate = NSPredicate(format: "%K != %@",
+                                             #keyPath(TrackerCategoryCoreData.title),
+                                             pinnedCategoryName)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        fetchedResultsController?.delegate = self
+        
+        do {
+            try fetchedResultsController?.performFetch()
+        } catch {
+            print("Cannot do performFetch for fetchedResultsController")
+        }
     }
     
     // MARK: Methods
@@ -58,31 +74,30 @@ extension CategoryStoreManager: NSFetchedResultsControllerDelegate {
         }
     }
     
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {
-        delegate?.startUpdate()
-    }
-    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {
         guard let insertedIndex = insertedIndex else {
-            print("insertedIndex is nil")
             return
         }
-        delegate?.removeStubAndShowCategories(indexPath: insertedIndex)
+        
+        if let category = object(at: insertedIndex) {
+            delegate?.insert(category, at: insertedIndex)
+        }
+        
         self.insertedIndex = nil
     }
     
     var numberOfSections: Int {
-        fetchedResultsController.sections?.count ?? 1
+        fetchedResultsController?.sections?.count ?? 1
     }
     
     func numberOfRowsInSection(_ section: Int) -> Int {
-        fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        fetchedResultsController?.sections?[section].numberOfObjects ?? 0
     }
     
     func object(at indexPath: IndexPath) -> TrackerCategory? {
-        let category = fetchedResultsController.object(at: indexPath)
-        guard let title = category.title,
-              let trackersCoreData = category.trackers?.allObjects as? [TrackerCoreData]
+        let category = fetchedResultsController?.object(at: indexPath)
+        guard let title = category?.title,
+              let trackersCoreData = category?.trackers?.allObjects as? [TrackerCoreData]
         else {
             return nil
         }

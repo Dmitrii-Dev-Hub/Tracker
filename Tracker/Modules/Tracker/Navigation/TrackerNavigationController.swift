@@ -2,7 +2,7 @@ import UIKit
 
 final class TrackerNavigationController: UINavigationController {
     
-    private let datePicker: UIDatePicker = { //MARK: DOTO - сделать месяц цифрами
+    private let datePicker: UIDatePicker = { 
         let datePicker = UIDatePicker()
         datePicker.locale = Locale(identifier: "ru_RU")
         datePicker.datePickerMode = .date
@@ -15,7 +15,7 @@ final class TrackerNavigationController: UINavigationController {
         searchController.searchBar.placeholder = "Поиск"
         searchController.searchBar.setValue("Отменить", forKey: "cancelButtonText")
         searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.tintColor = Resources.ColorYP.blue
+        searchController.searchBar.tintColor = R.ColorYP.blue
         searchController.searchBar.searchTextField.clearButtonMode = .never
         return searchController
     }()
@@ -46,20 +46,20 @@ final class TrackerNavigationController: UINavigationController {
         
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         
-        datePicker.tintColor = Resources.ColorYP.blue
+        datePicker.tintColor = R.ColorYP.blue
         
         viewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
     }
     
     private func setupAppearance() {
         navigationBar.shadowImage = UIImage()
-        navigationBar.backgroundColor = Resources.ColorYP.whiteDynamic
-        navigationBar.tintColor = Resources.ColorYP.blackDynamic
+        navigationBar.backgroundColor = R.ColorYP.whiteDynamic
+        navigationBar.tintColor = R.ColorYP.blackDynamic
         navigationBar.isTranslucent = false
         navigationBar.prefersLargeTitles = true
         
         viewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
-        viewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: Resources.ImagesYP.addIcon , style: .done, target: self, action: #selector(actionAddButton))
+        viewController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: R.ImagesYP.addIcon , style: .done, target: self, action: #selector(actionAddButton))
         
         searchBar.searchResultsUpdater = viewController
         viewController?.navigationItem.searchController = searchBar

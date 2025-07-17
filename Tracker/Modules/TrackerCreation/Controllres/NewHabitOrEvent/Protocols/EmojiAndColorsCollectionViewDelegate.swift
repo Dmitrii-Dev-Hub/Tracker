@@ -5,4 +5,3 @@ protocol EmojiAndColorsCollectionViewDelegate: NSObject {
     func changeSelectedEmoji(new emoji: String?)
 }
 
-

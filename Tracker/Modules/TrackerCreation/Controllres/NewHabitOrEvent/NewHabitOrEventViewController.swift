@@ -1,11 +1,9 @@
 import UIKit
 
 final class NewHabitOrEventViewController: UIViewController,
-                                           ScheduleViewControllerDelegate2,
-                                           CategoriesViewControllerDelegate {
+                                           ScheduleViewControllerDelegate2, CategoriesViewControllerDelegate {
     
-    private var colorTrackers = Resources.ColorYP.Tracker.trackers
-    
+    private var colorTrackers = R.ColorYP.Tracker.trackers
     
     var selectedDays = [Day]() {
         willSet(new) {
@@ -67,8 +65,8 @@ final class NewHabitOrEventViewController: UIViewController,
     
     private let textField: TextFieldWithPadding = {
         let textField = TextFieldWithPadding()
-        textField.placeholder = Resources.Text.placeholderNewTracker
-        textField.backgroundColor = Resources.ColorYP.backgroundDynamic
+        textField.placeholder = R.Text.placeholderNewTracker
+        textField.backgroundColor = R.ColorYP.backgroundDynamic
         textField.clearButtonMode = .whileEditing
         textField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         textField.layer.cornerRadius = 16
@@ -77,7 +75,7 @@ final class NewHabitOrEventViewController: UIViewController,
     
     private let warningLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Resources.ColorYP.red
+        label.textColor = R.ColorYP.red
         label.text = "Ограничение 38 символов"
         label.textAlignment = .center
         return label
@@ -89,8 +87,8 @@ final class NewHabitOrEventViewController: UIViewController,
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.isScrollEnabled = false
-        tableView.separatorColor = Resources.ColorYP.gray
-        tableView.backgroundColor = Resources.ColorYP.backgroundDynamic
+        tableView.separatorColor = R.ColorYP.gray
+        tableView.backgroundColor = R.ColorYP.backgroundDynamic
         return tableView
     }()
     
@@ -102,8 +100,8 @@ final class NewHabitOrEventViewController: UIViewController,
         return collection
     }()
     
-    private let cancelButton = CancelButton(title: Resources.Text.ButtonTitle.cancel)
-    private let doneButton = MainButton(title: Resources.Text.ButtonTitle.create)
+    private let cancelButton = CancelButton(title: R.Text.ButtonTitle.cancel)
+    private let doneButton = MainButton(title: R.Text.ButtonTitle.create)
     
     private let buttonsStackView: UIStackView = {
         let stackView = UIStackView()
@@ -145,9 +143,9 @@ final class NewHabitOrEventViewController: UIViewController,
     private func switchViewController() {
         switch typeTracker {
         case .habit:
-            title = Resources.Text.NavTitle.habitTitle
+            title = R.Text.NavTitle.habitTitle
         case .event:
-            title = Resources.Text.NavTitle.eventTitle
+            title = R.Text.NavTitle.eventTitle
         }
     }
     
@@ -171,12 +169,12 @@ final class NewHabitOrEventViewController: UIViewController,
     }
     
     private func blockCreateButton() {
-        doneButton.backgroundColor = Resources.ColorYP.gray
+        doneButton.backgroundColor = R.ColorYP.gray
         doneButton.isEnabled = false
     }
     
     private func unlockCreateButton() {
-        doneButton.backgroundColor = Resources.ColorYP.blackDynamic
+        doneButton.backgroundColor = R.ColorYP.blackDynamic
         doneButton.isEnabled = true
     }
     
@@ -220,7 +218,6 @@ extension NewHabitOrEventViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         guard
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: TrackerOptionTableViewCell.identifier,
@@ -229,6 +226,8 @@ extension NewHabitOrEventViewController: UITableViewDataSource {
         else {
             return UITableViewCell()
         }
+        
+        print(selectedCategory?.title)
         
         if indexPath.row == 0 {
             cell.configureCategory(subtitle: selectedCategory?.title ?? "")
@@ -254,8 +253,8 @@ extension NewHabitOrEventViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         if typeTracker == .habit || typeTracker == .event, indexPath.row == 0 {
-            let categoriesVC = CategoriesViewController(delegate: self, selectedCategory: selectedCategory)
-
+            let categoriesVC = CategoriesViewController(selectedCategory: selectedCategory, delegate: self)
+            
             navigationController?.pushViewController(categoriesVC, animated: true)
         }
         
@@ -410,6 +409,6 @@ extension NewHabitOrEventViewController {
     
     private func setupAppearance() {
         navigationItem.hidesBackButton = true
-        view.backgroundColor = Resources.ColorYP.whiteDynamic
+        view.backgroundColor = R.ColorYP.whiteDynamic
     }
 }

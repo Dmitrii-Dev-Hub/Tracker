@@ -7,7 +7,7 @@ final class DataManager {
     let persistentContainer: NSPersistentContainer
     
     private init() {
-        persistentContainer = NSPersistentContainer(name: "Tracker")
+        persistentContainer = NSPersistentContainer(name: "CoreData")
               
         persistentContainer.loadPersistentStores { (_, error) in
             if let error = error {
@@ -27,4 +27,3 @@ final class DataManager {
         }
     }
 }
-
