@@ -2,18 +2,12 @@ import UIKit
 
 final class TrackerNavigationController: UINavigationController {
     
-    private let datePicker: UIDatePicker = { 
-        let datePicker = UIDatePicker()
-        datePicker.locale = Locale(identifier: "ru_RU")
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .compact
-        return datePicker
-    }()
+    private let datePicker = UIDatePicker()
     
     private let searchBar: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
-        searchController.searchBar.placeholder = "Поиск"
-        searchController.searchBar.setValue("Отменить", forKey: "cancelButtonText")
+        searchController.searchBar.placeholder = R.Text.MainScreen.search.value
+        searchController.searchBar.setValue(R.Text.ButtonTitle.cancel.value, forKey: "cancelButtonText")
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.tintColor = R.ColorYP.blue
         searchController.searchBar.searchTextField.clearButtonMode = .never
@@ -35,20 +29,28 @@ final class TrackerNavigationController: UINavigationController {
     }
     
     private func setDatePicker() {
-        let datePicker = UIDatePicker()
-        
-        datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.locale = Locale.current
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         
-        datePicker.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        datePicker.widthAnchor.constraint(equalToConstant: 110).isActive = true
         
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         
         datePicker.tintColor = R.ColorYP.blue
         
+        datePicker.backgroundColor = R.ColorYP.datePickerBackground
+        datePicker.layer.cornerRadius = 8
+        datePicker.layer.masksToBounds = true
+        
+        datePicker.overrideUserInterfaceStyle = .light
+        
         viewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
+    }
+    
+    func setDate(date: Date) {
+        datePicker.setDate(date, animated: true)
     }
     
     private func setupAppearance() {
@@ -66,7 +68,7 @@ final class TrackerNavigationController: UINavigationController {
         
         viewController?.navigationItem.hidesSearchBarWhenScrolling = false
         viewController?.navigationItem.largeTitleDisplayMode = .always
-        viewController?.navigationItem.title = "Трекеры"
+        viewController?.navigationItem.title = R.Text.MainScreen.trackers.value
     }
     
     @objc private func datePickerValueChanged(_ sender: UIDatePicker) {

@@ -7,8 +7,6 @@ final class SectionHeaderView: UICollectionReusableView {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         label.textColor = R.ColorYP.blackDynamic
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
         return label
     }()
     
@@ -21,7 +19,7 @@ final class SectionHeaderView: UICollectionReusableView {
     }
     
     func changeTitle(title: String, leadingAnchor: Int) {
-        addSubview(label)
+        addView(label)
         
         label.text = title
         

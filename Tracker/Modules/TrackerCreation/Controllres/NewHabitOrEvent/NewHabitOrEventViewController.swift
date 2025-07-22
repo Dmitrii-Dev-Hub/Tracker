@@ -4,6 +4,17 @@ final class NewHabitOrEventViewController: UIViewController,
                                            ScheduleViewControllerDelegate2, CategoriesViewControllerDelegate {
     
     private var colorTrackers = R.ColorYP.Tracker.trackers
+    private var manager: TrackerStoreManager?
+    
+    var days: String {
+        let trackerRecordStore = TrackerRecordStore()
+        let count = trackerRecordStore.fetchCount(by: tracker.id)
+        
+        return String.localizedStringWithFormat(NSLocalizedString("daysCount", comment: ""), count)
+    }
+    
+    private let typeTracker: TrackerType
+    private var isEdit: Bool = false
     
     var selectedDays = [Day]() {
         willSet(new) {
@@ -58,10 +69,17 @@ final class NewHabitOrEventViewController: UIViewController,
     
     private var newCategory: TrackerCategory? = nil
     
-    private let typeTracker: TypeOfEventOrHabit
-    
     private let scrollView: UIScrollView = UIScrollView()
     private let scrollContainer: UIView = UIView()
+    
+    private let daysLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        label.textAlignment = .center
+        label.textColor = R.ColorYP.blackDynamic
+        
+        return label
+    }()
     
     private let textField: TextFieldWithPadding = {
         let textField = TextFieldWithPadding()
@@ -92,7 +110,7 @@ final class NewHabitOrEventViewController: UIViewController,
         return tableView
     }()
     
-    private let emojiAndColorsCollectionView: EmojiAndColorsCollectionView = {
+    private var emojiAndColorsCollectionView: EmojiAndColorsCollectionView = {
         let params = GeometricParams(cellCount: 6, topInset: 24,
                                      leftInset: 18, bottomInset: 40,
                                      rightInset: 18, cellSpacing: 5)
@@ -100,8 +118,8 @@ final class NewHabitOrEventViewController: UIViewController,
         return collection
     }()
     
-    private let cancelButton = CancelButton(title: R.Text.ButtonTitle.cancel)
-    private let doneButton = MainButton(title: R.Text.ButtonTitle.create)
+    private let cancelButton = CancelButton(title: R.Text.ButtonTitle.cancel.value)
+    private let doneButton = MainButton(title: R.Text.ButtonTitle.create.value)
     
     private let buttonsStackView: UIStackView = {
         let stackView = UIStackView()
@@ -111,10 +129,40 @@ final class NewHabitOrEventViewController: UIViewController,
         return stackView
     }()
     
-    init(type: TypeOfEventOrHabit) {
+    init(type: TrackerType) {
         self.typeTracker = type
+        self.manager = nil
         super.init(nibName: nil, bundle: nil)
     }
+    
+    private(set) var oldSelectedColor: UIColor? = nil
+    private(set) var oldSelectedEmoji: String? = nil
+    
+    init(
+        trackerStore: TrackerStore,
+        categoryStore: CategoryStore,
+        tracker: Tracker,
+        category: TrackerCategory,
+        isEdit: Bool = false
+    ) {
+        self.manager = TrackerStoreManager(trackerStore: trackerStore, categoryStore: categoryStore)
+        let isEvent = (tracker.timetable == nil || tracker.timetable == [])
+        
+        self.tracker = tracker
+        self.typeTracker = isEvent ? .event : .habit
+        self.selectedCategory = category
+        self.selectedDays = tracker.timetable ?? [Day]()
+        self.isEdit = isEdit
+        self.oldSelectedColor = tracker.color
+        self.oldSelectedEmoji = tracker.emoji
+        super.init(nibName: nil, bundle: nil)
+        let params = GeometricParams(cellCount: 6, topInset: 24,
+                                     leftInset: 18, bottomInset: 40,
+                                     rightInset: 18, cellSpacing: 5)
+        emojiAndColorsCollectionView = EmojiAndColorsCollectionView(params: params, oldSelectedColor: oldSelectedColor, oldSelectedEmoji: oldSelectedEmoji)
+        textField.text = tracker.name
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -122,6 +170,7 @@ final class NewHabitOrEventViewController: UIViewController,
         
         textField.addTarget(self, action: #selector(textChanged(_:)), for: .editingChanged)
         emojiAndColorsCollectionView.delegateController = self
+        
         
         setupTableView()
         setupButtons()
@@ -141,11 +190,15 @@ final class NewHabitOrEventViewController: UIViewController,
     }
     
     private func switchViewController() {
-        switch typeTracker {
-        case .habit:
-            title = R.Text.NavTitle.habitTitle
-        case .event:
-            title = R.Text.NavTitle.eventTitle
+        if isEdit {
+            title = "Редактирование привычки"
+        } else {
+            switch typeTracker {
+            case .habit:
+                title = R.Text.NavTitle.habit.value
+            case .event:
+                title = R.Text.NavTitle.event.value
+            }
         }
     }
     
@@ -209,6 +262,11 @@ final class NewHabitOrEventViewController: UIViewController,
         delegate?.addTracker(tracker: tracker, category: newCategory)
     }
     
+    @objc private func buttonSaveTapped() {
+        self.dismiss(animated: true)
+        guard let selectedCategory else { return }
+        manager?.update(tracker: tracker, category: selectedCategory)
+    }
 }
 
 //MARK: - UITableViewDataSource
@@ -227,7 +285,6 @@ extension NewHabitOrEventViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        print(selectedCategory?.title)
         
         if indexPath.row == 0 {
             cell.configureCategory(subtitle: selectedCategory?.title ?? "")
@@ -317,6 +374,10 @@ extension NewHabitOrEventViewController {
         view.addView(scrollView)
         scrollView.addView(scrollContainer)
         
+        if isEdit {
+            scrollView.addView(daysLabel)
+        }
+        
         scrollContainer.addView(textField)
         scrollContainer.addView(warningLabel)
         scrollContainer.addView(tableView)
@@ -336,58 +397,118 @@ extension NewHabitOrEventViewController {
         errorLabelTopConstraint = warningLabel.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 0)
         errorLabelTopConstraint?.isActive = true
         
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            
-            scrollContainer.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            scrollContainer.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            scrollContainer.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
-            scrollContainer.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
-            
-            //titleTextField
-            textField.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
-                                               constant: 16),
-            textField.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
-                                                constant: -16),
-            textField.topAnchor.constraint(equalTo: scrollContainer.topAnchor,
-                                           constant: 24),
-            textField.heightAnchor.constraint(equalToConstant: 75),
-            
-//            warningLabel.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 8),
-//            warningLabel.heightAnchor.constraint(equalToConstant: 50),
-            warningLabel.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
-                                                  constant: 16),
-            warningLabel.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
-                                                   constant: -16),
-            warningLabel.bottomAnchor.constraint(equalTo: tableView.topAnchor,
-                                                 constant: -24),
-            
-            //dataTableView
-            tableView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
-                                               constant: 16),
-            tableView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
-                                                constant: -16),
-            tableView.heightAnchor.constraint(equalToConstant: tableViewHeight),
-            
-            emojiAndColorsCollectionView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 32),
-            emojiAndColorsCollectionView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor, constant: 0),
-            emojiAndColorsCollectionView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor, constant: 0),
-            emojiAndColorsCollectionView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor),
-            emojiAndColorsCollectionView.heightAnchor.constraint(equalToConstant: getCollectionHeight()),
-            
-            //buttonsStackView
-            buttonsStackView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
-                                                      constant: 20),
-            buttonsStackView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
-                                                       constant: -20),
-            buttonsStackView.bottomAnchor.constraint(equalTo: scrollContainer.bottomAnchor,
-                                                     constant: -16),
-            buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
-        ])
+        if isEdit {
+            NSLayoutConstraint.activate([
+                scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+                scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+                
+                scrollContainer.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+                scrollContainer.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+                scrollContainer.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
+                scrollContainer.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
+                //datelabel
+                
+                daysLabel.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor, constant: 16),
+                daysLabel.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor, constant: -16),
+                daysLabel.topAnchor.constraint(equalTo: scrollContainer.topAnchor, constant: 24),
+                
+                //titleTextField
+                textField.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
+                                                   constant: 16),
+                textField.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
+                                                    constant: -16),
+                textField.topAnchor.constraint(equalTo: daysLabel.bottomAnchor,
+                                               constant: 24),
+                textField.heightAnchor.constraint(equalToConstant: 75),
+                
+    //            warningLabel.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 8),
+    //            warningLabel.heightAnchor.constraint(equalToConstant: 50),
+                warningLabel.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
+                                                      constant: 16),
+                warningLabel.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
+                                                       constant: -16),
+                warningLabel.bottomAnchor.constraint(equalTo: tableView.topAnchor,
+                                                     constant: -24),
+                
+                //dataTableView
+                tableView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
+                                                   constant: 16),
+                tableView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
+                                                    constant: -16),
+                tableView.heightAnchor.constraint(equalToConstant: tableViewHeight),
+                
+                emojiAndColorsCollectionView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 32),
+                emojiAndColorsCollectionView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor, constant: 0),
+                emojiAndColorsCollectionView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor, constant: 0),
+                emojiAndColorsCollectionView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor),
+                emojiAndColorsCollectionView.heightAnchor.constraint(equalToConstant: getCollectionHeight()),
+                
+                //buttonsStackView
+                buttonsStackView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
+                                                          constant: 20),
+                buttonsStackView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
+                                                           constant: -20),
+                buttonsStackView.bottomAnchor.constraint(equalTo: scrollContainer.bottomAnchor,
+                                                         constant: -16),
+                buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+                scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+                
+                scrollContainer.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+                scrollContainer.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+                scrollContainer.leadingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.leadingAnchor),
+                scrollContainer.trailingAnchor.constraint(equalTo: scrollView.frameLayoutGuide.trailingAnchor),
+                
+                //titleTextField
+                textField.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
+                                                   constant: 16),
+                textField.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
+                                                    constant: -16),
+                textField.topAnchor.constraint(equalTo: scrollContainer.topAnchor,
+                                               constant: 24),
+                textField.heightAnchor.constraint(equalToConstant: 75),
+                
+    //            warningLabel.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 8),
+    //            warningLabel.heightAnchor.constraint(equalToConstant: 50),
+                warningLabel.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
+                                                      constant: 16),
+                warningLabel.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
+                                                       constant: -16),
+                warningLabel.bottomAnchor.constraint(equalTo: tableView.topAnchor,
+                                                     constant: -24),
+                
+                //dataTableView
+                tableView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
+                                                   constant: 16),
+                tableView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
+                                                    constant: -16),
+                tableView.heightAnchor.constraint(equalToConstant: tableViewHeight),
+                
+                emojiAndColorsCollectionView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 32),
+                emojiAndColorsCollectionView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor, constant: 0),
+                emojiAndColorsCollectionView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor, constant: 0),
+                emojiAndColorsCollectionView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor),
+                emojiAndColorsCollectionView.heightAnchor.constraint(equalToConstant: getCollectionHeight()),
+                
+                //buttonsStackView
+                buttonsStackView.leadingAnchor.constraint(equalTo: scrollContainer.leadingAnchor,
+                                                          constant: 20),
+                buttonsStackView.trailingAnchor.constraint(equalTo: scrollContainer.trailingAnchor,
+                                                           constant: -20),
+                buttonsStackView.bottomAnchor.constraint(equalTo: scrollContainer.bottomAnchor,
+                                                         constant: -16),
+                buttonsStackView.heightAnchor.constraint(equalToConstant: 60),
+            ])
+        }
     }
     
     private func setupTableView() {
@@ -398,9 +519,16 @@ extension NewHabitOrEventViewController {
     }
     
     private func setupButtons() {
-        blockCreateButton()
-        doneButton.addTarget(self, action: #selector(doneButtonTapped),
-                             for: .touchUpInside)
+        
+        if isEdit {
+            doneButton.addTarget(self, action: #selector(buttonSaveTapped),
+                                 for: .touchUpInside)
+            doneButton.titleLabel?.text = "Сохранить"
+        } else {
+            blockCreateButton()
+            doneButton.addTarget(self, action: #selector(doneButtonTapped),
+                                 for: .touchUpInside)
+        }
         
         cancelButton.addTarget(self,
                                action: #selector(cancelButtonTapped),
@@ -410,5 +538,7 @@ extension NewHabitOrEventViewController {
     private func setupAppearance() {
         navigationItem.hidesBackButton = true
         view.backgroundColor = R.ColorYP.whiteDynamic
+        
+        daysLabel.text = days
     }
 }

@@ -6,7 +6,7 @@ final class EmojiAndColorsCollectionView: UICollectionView {
     weak var delegateController: EmojiAndColorsCollectionViewDelegate?
     
     let params: GeometricParams
-    private let colors = R.ColorYP.Tracker.trackers
+    private let colors = R.Tracker1.trackersColors
     private let borderColors = R.ColorYP.Tracker.trackersBorder
     private let emojies = R.Mocks.emojies
     
@@ -15,13 +15,22 @@ final class EmojiAndColorsCollectionView: UICollectionView {
     private var lastSelectedEmojiCell: EmojiOrColorCollectionViewCell? = nil
     private var lastSelectedColorCell: EmojiOrColorCollectionViewCell? = nil
     
+    var strColors:[String] = []
+    
+    var oldSelectedColor: UIColor?
+    var oldSelectedEmoji: String?
+    
+    
+    
     // MARK: Init
     
-    init(params: GeometricParams) {
+    init(params: GeometricParams, oldSelectedColor: UIColor? = nil, oldSelectedEmoji: String? = nil) {
         self.params = params
+        self.oldSelectedColor = oldSelectedColor
+        self.oldSelectedEmoji = oldSelectedEmoji
         
         super.init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        
+        self.strColors = self.colors.map { Tracker.convertColorToString($0)}
         configure()
     }
     
@@ -48,6 +57,7 @@ final class EmojiAndColorsCollectionView: UICollectionView {
         dataSource = self
         delegate = self
     }
+    
 }
 
 // MARK: UICollectionViewDataSource
@@ -74,10 +84,30 @@ extension EmojiAndColorsCollectionView: UICollectionViewDataSource {
         
         if indexPath.section == 0 {
             cell.configure(with: emojies[indexPath.row])
-        } else {
+            
+            if let emoji = oldSelectedEmoji {
+                let indexPathEmoji = IndexPath(item: emojies.firstIndex(of: emoji) ?? 0, section: 0)
+                if indexPathEmoji == indexPath {
+                    lastSelectedEmojiCell = cell
+                    emojiIsSelected = true
+                    cell.backgroundColor = R.ColorYP.backgroundDynamic
+                }
+            }
+        } else if indexPath.section == 1 {
             cell.configure(with: colors[indexPath.row])
+
+            let strColor = Tracker.convertColorToString(oldSelectedColor ?? UIColor())
+            
+            if let color = oldSelectedColor {
+                let indexPathColor = IndexPath(item: strColors.firstIndex(of: strColor) ?? 0, section: 1)
+                if indexPathColor == indexPath {
+                    lastSelectedColorCell = cell
+                    colorIsSelected = true
+                    cell.layer.borderColor = colors[indexPathColor.row].cgColor.copy(alpha: 0.3)
+                    cell.layer.borderWidth = 3
+                }
+            }
         }
-        
         return cell
     }
 }
@@ -153,3 +183,4 @@ extension EmojiAndColorsCollectionView: UICollectionViewDelegateFlowLayout {
         }
     }
 }
+

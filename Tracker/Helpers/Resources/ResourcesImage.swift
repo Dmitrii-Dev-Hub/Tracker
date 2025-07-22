@@ -17,7 +17,7 @@ extension R {
         static let image = UIImage(resource: .imageYP)
         static let arrowRight = UIImage(systemName: "chevron.right")
         static let checkmark = UIImage(resource: .checkmarkYP)
-        
+        static let pin = UIImage(resource: .pinYP)
 
     }
 }

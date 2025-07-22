@@ -13,24 +13,25 @@ final class TabBarController: UITabBarController {
     // MARK: - Private Methods
     private func setupAppearance() {
         view.backgroundColor = R.ColorYP.whiteDynamic
+        tabBar.backgroundColor = R.ColorYP.whiteDynamic
         tabBar.isTranslucent = false
         tabBar.tintColor = R.ColorYP.blue
-        tabBar.addTopBorder(color: R.ColorYP.gray, thickness: 0.5)
+        tabBar.addTopBorder(color: R.ColorYP.separatorDynamic, thickness: 0.5)
     }
     
     private func setupTabBar() {
         let trackersVC = TrackersViewController()
         let trackersNavCon = TrackerNavigationController(rootViewController: trackersVC)
         trackersNavCon.tabBarItem = UITabBarItem(
-            title: R.Text.tracker,
+            title: R.Text.MainScreen.trackers.value,
             image: R.ImagesYP.TabBar.tracker,
             selectedImage: nil
         )
         
-        let statistic = UIViewController()
+        let statistic = StatisticViewController()
         let statisticNav = UINavigationController(rootViewController: statistic)
         statisticNav.tabBarItem = UITabBarItem(
-            title: R.Text.statistic,
+            title: R.Text.MainScreen.statistic.value,
             image: R.ImagesYP.TabBar.statistic,
             selectedImage: nil
         )

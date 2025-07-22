@@ -2,31 +2,17 @@ import UIKit
 
 final class TrackersCollectionViewCell: UICollectionViewCell {
     static let identifier = "TrackersCollectionViewCell"
-    
     weak var delegate: TrackersCellDelegate?
     
     private var isCompletedToday = false
-    private var trackerId: UUID?
+    private(set) var trackerId: UUID?
     private var completedDays = 0
     private var date: Date?
+    private(set) var isPinned = false
     
     // MARK: Properties
     
-    private let backView: UIView = {
-        let view = UIView()
-        view.layer.cornerRadius = 16
-        
-        return view
-    }()
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 2
-        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = R.ColorYP.whiteDynamic
-        
-        return label
-    }()
+    private let backView = TrackerColorCellView()
     
     private let daysLabel: UILabel = {
         let label = UILabel()
@@ -44,8 +30,6 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
-    private let emojiView = EmojiView()
-    
     
     // MARK: Init
     
@@ -53,7 +37,11 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         
         contentView.layer.cornerRadius = 16
+        layer.cornerRadius = 16
         contentView.layer.masksToBounds = true
+        contentView.clipsToBounds = true
+        contentView.backgroundColor = .clear
+        backgroundColor = .clear
         
         configureViews()
     }
@@ -64,7 +52,33 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     
     // MARK: Methods
     
-    func configure(tracker: Tracker, isCompleted: Bool, completedDays: Int, date: Date) {
+    func getTrackerViewFrame() -> CGRect {
+        backView.frame
+    }
+    
+    func getColor() -> UIColor? {
+        backView.getColor()
+    }
+    
+    func getTitle() -> String? {
+        backView.getTitle()
+    }
+    
+    func getEmoji() -> String? {
+        backView.getEmoji()
+    }
+    
+    func pin() {
+        backView.pin()
+        isPinned = true
+    }
+    
+    func unpin() {
+        backView.unpin()
+        isPinned = false
+    }
+    
+    func configure(tracker: Tracker, isCompleted: Bool, completedDays: Int, date: Date, isPinned: Bool) {
         self.isCompletedToday = isCompleted
         self.trackerId = tracker.id
         self.date = date
@@ -80,20 +94,22 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
             self.completedDays = completedDays
             setUncompletedState(with: completedDays)
         }
+        
+        isPinned ? pin() : unpin()
     }
     
     private func setColor(color: UIColor?) {
-        backView.backgroundColor = color
+        backView.set(color: color)
         addButton.backgroundColor = color
     }
     
     private func setEmoji(emoji: String?) {
         guard let emoji = emoji else { return }
-        emojiView.changeEmoji(emoji: String(emoji))
+        backView.set(emoji: String(emoji))
     }
     
     private func setTitle(text: String?) {
-        titleLabel.text = text
+        backView.set(title: text)
     }
     
     private func setDays(text: String?) {
@@ -103,33 +119,17 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     private func setCompletedState(with count: Int) {
         addButton.layer.opacity = 0.3
         addButton.setImage(R.ImagesYP.checkmark, for: .normal)
-        setDays(text: getDayText(number: count))
+        setDays(text: String.localizedStringWithFormat(NSLocalizedString("daysCount", comment: ""), count))
         isCompletedToday = true
     }
     
     private func setUncompletedState(with count: Int) {
         addButton.layer.opacity = 1
         addButton.setImage(R.ImagesYP.addIcon, for: .normal)
-        setDays(text: getDayText(number: count))
+        setDays(
+            text: String.localizedStringWithFormat(NSLocalizedString("daysCount", comment: ""), count)
+        )
         isCompletedToday = false
-    }
-    
-    private func getDayText(number: Int) -> String {
-        let last = number % 10
-        var text: String
-        switch last {
-        case 0, 5, 6, 7, 8, 9:
-            text = "дней"
-        case 1:
-            text = "день"
-        case 2, 3, 4:
-            text = "дня"
-        default:
-            text = "день"
-        }
-        text = "\(number) " + text
-        
-        return text
     }
     
     @objc private func recordTracker() {
@@ -149,34 +149,18 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     }
     
     private func configureViews() {
-        [backView, titleLabel, daysLabel, addButton, emojiView].forEach {
+        [backView, daysLabel, addButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview($0)
         }
         
         addButton.addTarget(self, action: #selector(recordTracker), for: .touchUpInside)
-        
-        backView.addSubview(titleLabel)
-        backView.addSubview(emojiView)
-        contentView.addSubview(backView)
-        contentView.addSubview(daysLabel)
-        contentView.addSubview(addButton)
-        
         
         NSLayoutConstraint.activate([
             backView.topAnchor.constraint(equalTo: topAnchor),
             backView.leadingAnchor.constraint(equalTo: leadingAnchor),
             backView.trailingAnchor.constraint(equalTo: trailingAnchor),
             backView.heightAnchor.constraint(equalToConstant: 90),
-            
-            emojiView.leadingAnchor.constraint(equalTo: backView.leadingAnchor, constant: 12),
-            emojiView.topAnchor.constraint(equalTo: backView.topAnchor, constant: 12),
-            emojiView.heightAnchor.constraint(equalToConstant: 24),
-            emojiView.widthAnchor.constraint(equalToConstant: 24),
-            
-            titleLabel.leadingAnchor.constraint(equalTo: backView.leadingAnchor, constant: 12),
-            titleLabel.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -12),
-            titleLabel.bottomAnchor.constraint(equalTo: backView.bottomAnchor, constant: -12),
-            titleLabel.topAnchor.constraint(equalTo: emojiView.bottomAnchor, constant: 8),
             
             addButton.topAnchor.constraint(equalTo: backView.bottomAnchor, constant: 8),
             addButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
@@ -188,4 +172,7 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
             daysLabel.centerYAnchor.constraint(equalTo: addButton.centerYAnchor),
         ])
     }
+    
+    
+    
 }

@@ -1,0 +1,101 @@
+// Onboarding
+onboardingButton = "These are the technologies!";
+onboardingFirst = "Track only what you want";
+onboardingSecond = "Even if it's not liters of water and yoga";
+
+// Main screens
+trackers = "Trackers";
+statistic = "Statistic";
+search = "Search";
+
+// Statistic
+trackersCompleted = "Trackers completed";
+
+// Filters
+filters = "Filters";
+allTrackers = "All trackers";
+trackersForToday = "Trackers for today";
+completed = "Completed";
+uncompleted = "Uncompleted";
+
+
+// Context menu
+pin = "Pin";
+unpin = "Unpin";
+pinned = "Pinned";
+delete = "Delete";
+edit = "Edit";
+back = "Back";
+
+// Stubs
+stub.search = "Nothing was found";
+stub.trackers = "What are we going to track?";
+stub.categories = "Habits and events can be combined in meaning";
+stub.statistic = "There is nothing to analyze yet";
+
+// Messages
+message.delete.tracker = "Are you sure you want to delete the tracker?";
+
+// Buttons
+save = "Save";
+cancel = "Cancel";
+create = "Create";
+done = "Done";
+addCategory = "Add category";
+
+// Type selection screen
+newTrackerTitle = "Create tracker";
+habit = "Habit";
+event = "Irregular event";
+
+// New habit or event
+creation.title.habit = "New habit";
+creation.title.event = "New irregular event";
+
+edit.title.habit = "Editing a habit";
+edit.title.event = "Editing an irregular event";
+
+characterLimit = "The limit is 38 characters";
+
+input.name.tracker = "Enter the name of the tracker";
+category = "Category";
+schedule = "Schedule";
+emoji = "Emoji";
+color = "Color";
+
+// Categories
+
+categories.title = "Category";
+
+// New category
+newCategory.title = "New category";
+input.name.category = "Enter the name of the category";
+
+// Schedule
+schedule.title = "Schedule";
+monday = "Monday";
+tuesday = "Tuesday";
+wednesday = "Wednesday";
+thursday = "Thursday";
+friday = "Friday";
+saturday = "Saturday";
+sunday = "Sunday";
+everyDay = "Every day";
+
+// Short Schedule
+mon = "Mon";
+tue = "Tue";
+wed = "Wed";
+thu = "Thu";
+fri = "Fri";
+sat = "Sat";
+sun = "Sun";
+
+
+
+
+
+
+
+
+

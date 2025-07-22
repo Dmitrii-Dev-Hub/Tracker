@@ -17,7 +17,7 @@ final class BaseOnboardingViewController: UIViewController {
     }()
     
     private let button: UIButton = {
-        let button = MainButton(title: R.Text.ButtonTitle.onboarding)
+        let button = MainButton(title: R.Text.Onboarding.button.value)
         return button
     }()
     

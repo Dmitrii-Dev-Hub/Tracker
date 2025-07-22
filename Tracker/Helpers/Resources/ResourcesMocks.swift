@@ -22,6 +22,23 @@ extension R {
             "Воскресенье"
         ]
         
+        static let shortDays: [String] = [
+            "Пн",
+            "Вт"
+            ,"Ср"
+            ,"Чт"
+            ,"Пт"
+            ,"Сб"
+            ,"Вс"
+        ]
+        
+        static let filters: [String] = [
+            "Все трекеры",
+            "Трекеры на сегодня",
+            "Завершенные",
+            "Незавершенные"
+        ]
+        
         static let trackers = [
             TrackerCategory(title: "Важное", trackers: [
                 Tracker(
@@ -38,7 +55,7 @@ extension R {
                 Tracker(id: UUID(), name: "Свидания в апреле", color: R.ColorYP.blue, emoji: "😂", timetable: [.thursday, .tuesday], creationDate: Date())])
         ]
         
-        static let emojies: [Character] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱",
+        static let emojies: [String] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱",
                                            "😇", "😡", "🥶", "🤔", "🙌", "🍔",
                                            "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     }

@@ -11,8 +11,8 @@ final class NewTrackerViewController: UIViewController {
         return stackView
     }()
     
-    private let habitButton = MainButton(title: "Привычка")
-    private let eventButton = MainButton(title: "Нерегулярное событие")
+    private let habitButton = MainButton(title: R.Text.NavTitle.habit.value)
+    private let eventButton = MainButton(title: R.Text.NavTitle.event.value)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,7 +46,7 @@ final class NewTrackerViewController: UIViewController {
     
     private func setupAppearance() {
         view.backgroundColor = R.ColorYP.whiteDynamic
-        title = R.Text.NavTitle.newTracker
+        title = R.Text.NavTitle.newTracker.value
         
         navigationController?.navigationBar.standardAppearance.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
