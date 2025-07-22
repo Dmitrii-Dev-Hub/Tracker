@@ -2,28 +2,78 @@ import Foundation
 
 extension R {
     enum Text {
-        enum NavTitle {
-            static let newTracker = "Создание трекера"
-            static let habitTitle = "Новая привычка"
-            static let eventTitle = "Новое нерегулярное событие"
+        enum NavTitle: String {
+            case newTracker = "newTrackerTitle"
+            case habit
+            case event
+            
+            var value: Swift.String {
+                NSLocalizedString(self.rawValue, comment: "")
+            }
         }
         
-        enum ButtonTitle {
-            static let create = "Создать"
-            static let cancel = "Отменить"
-            static let done = "Готово"
-            static let createCategory = "Добавить категорию"
-            static let onboarding = "Вот это технологии!"
+        enum Day {
+            func localizedDaysString(count: Int) -> String {
+                return String.localizedStringWithFormat(
+                    NSLocalizedString("days", comment: "Days count string"),
+                    count
+                )
+            }
         }
         
-        enum Onboarding {
-            static let blue = "Отслеживайте только то, что хотите"
-            static let red = "Даже если это не литры воды и йога"
+        enum ButtonTitle: String {
+            case create
+            case cancel
+            case save
+            case done
+            case addCategory
+            
+            var value: Swift.String {
+                NSLocalizedString(self.rawValue, comment: "")
+            }
         }
         
-        static let tracker = "Трекеры"
+        enum Onboarding: String  {
+            case button = "onboardingButton"
+            case first = "onboardingFirst"
+            case second = "onboardingSecond"
+            
+            var value: Swift.String {
+                NSLocalizedString(self.rawValue, comment: "")
+            }
+        }
+        
+        enum MainScreen: String {
+            case trackers
+            case statistic
+            case search
+            
+            var value: Swift.String {
+                NSLocalizedString(self.rawValue, comment: "")
+            }
+        }
+        
+        enum Filters: String {
+            case filters = "filters"
+            
+            var value: Swift.String {
+                NSLocalizedString(self.rawValue, comment: "")
+            }
+        }
+        
+        enum ContextMenu: String {
+            case pin
+            case unpin
+            case delete
+            case edit
+            case pinned
+            
+            var value: Swift.String {
+                NSLocalizedString(self.rawValue, comment: "")
+            }
+        }
+        
         static let placeholderNewTracker = "Введите название трекера"
-        static let statistic = "Статистика"
         
         static let textNoContent = "Что будем отслеживать?"
         static let textNoCategory = "Привычки и события можно\nобъединить по смыслу"

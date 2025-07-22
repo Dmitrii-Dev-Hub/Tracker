@@ -6,9 +6,11 @@ struct TrackerRecord: Equatable {
     
     static func == (lhs: TrackerRecord, rhs: TrackerRecord) -> Bool {
         let isSameDate = Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date)
-        return lhs.id == rhs.id && isSameDate
+        if lhs.id == rhs.id && isSameDate {
+            return true
+        }
+        return false
     }
-    
     
     init(id: UUID, date: Date) {
         self.id = id
@@ -26,3 +28,4 @@ struct TrackerRecord: Equatable {
         self.date = date
     }
 }
+

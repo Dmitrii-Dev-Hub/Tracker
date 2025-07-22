@@ -32,7 +32,7 @@ final class CategoriesViewController: UIViewController, UINavigationControllerDe
     private let stubView = NoContentView(text: R.Text.textNoCategory,
                                          image: R.ImagesYP.dizzy)
     
-    private let createButton = MainButton(title: R.Text.ButtonTitle.createCategory)
+    private let createButton = MainButton(title: R.Text.ButtonTitle.addCategory.value)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +41,7 @@ final class CategoriesViewController: UIViewController, UINavigationControllerDe
             guard let self = self else { return }
             if self.stubView.isHidden == false {
                 self.stubView.removeFromSuperview()
-                self.setupTableView()
+                self.setupSubviews()
             }
             
             self.tableView.reloadData()
@@ -53,6 +53,18 @@ final class CategoriesViewController: UIViewController, UINavigationControllerDe
         setupTableView()
         setupButtons()
         tableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        viewModel.categoriesBinding = { [weak self] _ in
+            guard let self = self else { return }
+            if self.stubView.isHidden == false {
+                self.stubView.removeFromSuperview()
+                self.setupSubviews()
+            }
+            
+            self.tableView.reloadData()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -73,6 +85,7 @@ final class CategoriesViewController: UIViewController, UINavigationControllerDe
 extension CategoriesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.categories.count
+        print(viewModel.categories.count)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -97,11 +110,11 @@ extension CategoriesViewController: UITableViewDataSource {
         
         cell.layer.cornerRadius = 0
         cell.layer.maskedCorners = []
-
+        
         let isFirst = indexPath.row == 0
         let isLast = indexPath.row == categories.count - 1
         let isSingle = categories.count == 1
-
+        
         if isSingle {
             cell.layer.cornerRadius = 16
             cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner,

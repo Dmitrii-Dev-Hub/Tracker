@@ -20,18 +20,18 @@ final class CategoriesViewModel: NewCategoryStoreManagerDelegate, CategoriesView
     
     // MARK: Init
     
-    init(categoryStore: TrackerCategoryStore, selectedCategory: TrackerCategory? = nil) {
+    init(categoryStore: CategoryStore, selectedCategory: TrackerCategory?) {
         
         let manager = CategoryStoreManager(categoryStore: categoryStore)
         
         self.manager = manager
-        self.manager.delegate = self
+        manager.delegate = self
         self.categories = fetchCategories()
         self.selectedCategory = selectedCategory
     }
     
-    convenience init(selectedCategory: TrackerCategory? = nil) {
-        self.init(categoryStore: TrackerCategoryStore(), selectedCategory: selectedCategory)
+    convenience init(selectedCategory: TrackerCategory?) {
+        self.init(categoryStore: CategoryStore(), selectedCategory: selectedCategory)
     }
     
     // MARK: Methods

@@ -14,7 +14,7 @@ final class NewCategoriesViewController: UIViewController {
         return textField
     }()
     
-    private let doneButton = MainButton(title: R.Text.ButtonTitle.done)
+    private let doneButton = MainButton(title: R.Text.ButtonTitle.done.value)
     
     init(viewModel: CategoriesViewModelProtocol) {
         self.viewModel = viewModel

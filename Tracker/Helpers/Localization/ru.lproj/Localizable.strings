@@ -1,0 +1,96 @@
+// Onboarding
+onboardingButton = "Вот это технологии!";
+onboardingFirst = "Отслеживайте только то, что хотите";
+onboardingSecond = "Даже если это не литры воды и йога";
+
+// Main screens
+trackers = "Трекеры";
+statistic = "Статистика";
+search = "Поиск";
+
+// Statistic
+//trackersCompleted = "Трекеров завершено";
+
+// Filters
+filters = "Фильтры";
+
+// Context menu
+pin = "Закрепить";
+unpin = "Открепить";
+pinned = "Закрепленные";
+delete = "Удалить";
+edit = "Редактировать";
+back = "Отменить";
+
+// Stubs
+stub.search = "Ничего не найдено";
+stub.trackers = "Что будем отслеживать?";
+stub.categories = "Привычки и события можно\nобъединить по смыслу";
+stub.statistic = "Анализировать пока нечего";
+
+// Messages
+message.delete.tracker = "Уверены, что хотите удалить трекер?";
+
+// Buttons
+save = "Сохранить";
+cancel = "Отменить";
+create = "Создать";
+done = "Готово";
+addCategory = "Добавить категорию";
+
+// Type selection screen
+newTrackerTitle = "Создание трекера";
+habit = "Привычка";
+event = "Нерегулярное событие";
+
+// New habit or event
+creation.title.habit = "Новая привычка";
+creation.title.event = "Новое нерегулярное событие";
+
+//edit.title.habit = "Редактирование привычки";
+//edit.title.event = "Редактирование нерегулярного события";
+
+characterLimit = "Ограничение 38 символов";
+
+input.name.tracker = "Введите название трекера";
+category = "Категория";
+schedule = "Расписание";
+emoji = "Emoji";
+color = "Цвет";
+
+// Categories
+
+categories.title = "Категория";
+
+// New category
+newCategory.title = "Новая категория";
+input.name.category = "Введите название категории";
+
+// Schedule
+schedule.title = "Расписание";
+monday = "Понедельник";
+tuesday = "Вторник";
+wednesday = "Среда";
+thursday = "Четверг";
+friday = "Пятница";
+saturday = "Суббота";
+sunday = "Воскресенье";
+everyDay = "Каждый день";
+
+// Short Schedule
+mon = "Пн";
+tue = "Вт";
+wed = "Ср";
+thu = "Чт";
+fri = "Пт";
+sat = "Сб";
+sun = "Вс";
+
+
+
+
+
+
+
+
+
