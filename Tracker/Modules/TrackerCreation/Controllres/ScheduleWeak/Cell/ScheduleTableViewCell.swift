@@ -6,8 +6,8 @@ final class ScheduleTableViewCell: UITableViewCell {
     
     let switchView: UISwitch = {
         let switchView = UISwitch(frame: .zero)
-        switchView.onTintColor = Resources.ColorYP.blue
-        switchView.backgroundColor = Resources.ColorYP.backgroundDynamic
+        switchView.onTintColor = R.ColorYP.blue
+        switchView.backgroundColor = R.ColorYP.backgroundDynamic
         return switchView
     }()
     
@@ -15,7 +15,7 @@ final class ScheduleTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         accessoryView = switchView
-        backgroundColor = Resources.ColorYP.backgroundDynamic
+        backgroundColor = R.ColorYP.backgroundDynamic
         selectionStyle = .none
     }
     

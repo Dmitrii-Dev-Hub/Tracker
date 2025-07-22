@@ -6,7 +6,7 @@ final class SectionHeaderView: UICollectionReusableView {
     private let label: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        label.textColor = Resources.ColorYP.blackDynamic
+        label.textColor = R.ColorYP.blackDynamic
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label

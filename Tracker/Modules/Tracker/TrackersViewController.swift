@@ -3,14 +3,14 @@ import UIKit
 
 final class TrackersViewController: UIViewController {
     
-    static var categories: [TrackerCategory] = Resources.Mocks.trackers
+    static var categories: [TrackerCategory] = R.Mocks.trackers
     private var trackerStoreManager: TrackerStoreManager?
     private var searchText: String? = nil
     static var currentDate = Date()
     
     private var collectionHelper: HelperTrackersCollectionView?
     
-    private let stubView = NoContentView(text: Resources.Text.textNoContent, image: Resources.ImagesYP.dizzy)
+    private let stubView = NoContentView(text: R.Text.textNoContent, image: R.ImagesYP.dizzy)
     
     private let trackersCollection: UICollectionView = {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -20,7 +20,7 @@ final class TrackersViewController: UIViewController {
                             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                             withReuseIdentifier: SectionHeaderView.identifier)
         collection.translatesAutoresizingMaskIntoConstraints = false
-        collection.backgroundColor = Resources.ColorYP.whiteDynamic
+        collection.backgroundColor = R.ColorYP.whiteDynamic
         collection.showsVerticalScrollIndicator = false
         collection.showsHorizontalScrollIndicator = false
         
@@ -88,37 +88,6 @@ final class TrackersViewController: UIViewController {
         
         return filteredCategories
     }
-    
-//    private func filterTrackers(by day: Day) {
-//        var filtered = getFilteredTrackers(by: day)
-//
-//        if let searchText = navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
-//            filtered = filtered.map { category in
-//                let filteredTrackers = category.trackers.filter { item in
-//                    guard let name = item.name else { return false }
-//                    return name.lowercased().contains(searchText.lowercased())
-//                }
-//                return TrackerCategory(title: category.title, trackers: filteredTrackers)
-//            }
-//        }
-//        reloadCollection()
-//        setupSubviews()
-//    }
-//
-//    private func trackersIsEmpty() -> Bool {
-//        if TrackersViewController.categories.isEmpty {
-//            return true
-//        }
-//
-//        var trackersIsEmpty = true
-//        for category in collectionHelper.categories {
-//            if !category.trackers.isEmpty {
-//                trackersIsEmpty = false
-//            }
-//        }
-//
-//        return trackersIsEmpty
-//    }
 }
 
 extension TrackersViewController: NewTrackerViewControllerDelegate {
@@ -141,17 +110,6 @@ extension TrackersViewController: TrackerStoreManagerDelegate {
 }
 
 //MARK: - NewTrackerViewControllerDelegate
-//extension TrackersViewController: NewTrackerViewControllerDelegate {
-//    func addTracker() {
-//        if !stubView.isHidden {
-//            stubView.removeFromSuperview()
-//            addTrackersCollection()
-//        }
-//        let weekday = getCurrentWeekday()
-//        filterTrackers(by: weekday)
-//        trackersCollection.reloadData()
-//    }
-//}
 
 
 // MARK: UISearchResultsUpdating
@@ -200,7 +158,7 @@ extension TrackersViewController: TrackersNavigationControllerDelegate {
 
 extension TrackersViewController {
     private func configure() {
-        view.backgroundColor = Resources.ColorYP.whiteDynamic
+        view.backgroundColor = R.ColorYP.whiteDynamic
         
         trackerStoreManager = TrackerStoreManager(
             trackerStore: TrackerStore(),

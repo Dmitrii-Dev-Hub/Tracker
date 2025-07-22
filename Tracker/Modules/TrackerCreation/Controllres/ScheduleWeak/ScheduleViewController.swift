@@ -12,22 +12,22 @@ final class ScheduleViewController: UIViewController {
     
     weak var delegate: ScheduleViewControllerDelegate2?
     
-    private let allDays: [Day] = Resources.Mocks.weekdays
-    private let days = Resources.Mocks.weekdaysStrings
+    private let allDays: [Day] = R.Mocks.weekdays
+    private let days = R.Mocks.weekdaysStrings
     private var selectedDays: Set<Day> = []
     
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.layer.cornerRadius = 16
         tableView.separatorStyle = .singleLine
-        tableView.separatorColor = Resources.ColorYP.gray
+        tableView.separatorColor = R.ColorYP.gray
         tableView.backgroundColor = .clear
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         return tableView
     }()
     
-    private let doneButton = MainButton(title: Resources.Text.ButtonTitle.done)
+    private let doneButton = MainButton(title: R.Text.ButtonTitle.done)
     
     init(delegate: ScheduleViewControllerDelegate2? = nil, selectedDays: Set<Day>) {
         self.delegate = delegate
@@ -169,11 +169,11 @@ extension ScheduleViewController {
     }
     
     private func setupAppearance() {
-        view.backgroundColor = Resources.ColorYP.whiteDynamic
+        view.backgroundColor = R.ColorYP.whiteDynamic
     }
     
     private func setupNavController() {
-        title = Resources.Text.schedule
+        title = R.Text.schedule
         navigationItem.hidesBackButton = true
     }
     
